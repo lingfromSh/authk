@@ -1,7 +1,6 @@
-from datetime import datetime
-
 from tortoise import Model
 from tortoise import fields
+from tortoise import timezone
 from tortoise.manager import Manager
 from tortoise.queryset import QuerySet
 
@@ -13,7 +12,7 @@ AllObjectManager = Manager
 class ActiveQuerySet(QuerySet):
     async def soft_delete(self):
         # TODO: autoset deleted_by as current operator
-        await self.update(deleted_at=datetime.utcnow().timestamp(), deleted_by="Operator")
+        await self.update(deleted_at=timezone.now().timestamp(), deleted_by="Operator")
 
 
 # Only output non-deleted objects
@@ -39,7 +38,7 @@ class BaseModel(Model):
     deleted_objects = DeletedObjectManager()
 
     async def soft_delete(self, using_db=None):
-        self.deleted_at = datetime.utcnow().timestamp()
+        self.deleted_at = timezone.now().timestamp()
         # TODO: autoset deleted_by as current operator
         self.deleted_by = "Operator ID"
         await self.save(using_db=using_db, update_fields=["deleted_at", "deleted_by"])
