@@ -11,4 +11,4 @@ class DatabaseOperation(BaseModel):
     current_state = fields.CharField(source_field="cstate", max_length=255, description="current state")
 
     class Meta:
-        indexes = ("table", "object_id", "attribute", ("table", "object_id"), ("table", "object_id", "attribute"))
+        indexes = ("table", "object_id", "attribute")

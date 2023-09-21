@@ -11,6 +11,7 @@ python = "^3.9"
 fastapi = "^0.103.1"
 authlib = "^1.2.1"
 tortoise-orm = "^0.20.0"
+aerich = "^0.7.2"
 
 
 [tool.poetry.group.production.dependencies]
@@ -28,13 +29,17 @@ remove_duplicate_keys = true
 
 [tool.isort]
 profile = "black"
-line_length = 120
+line_length = 130
 force_single_line = true
 
 [tool.black]
-line_length = 120
+line_length = 130
 taraget_version = ["py39", "py310", "py311"]
 
+[tool.aerich]
+tortoise_orm = "config.TORTOISE_ORM"
+location = "./migrations"
+src_folder = "./."
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

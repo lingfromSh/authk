@@ -1,7 +1,10 @@
+from typing import Tuple
+
 from tortoise import Model
 from tortoise import fields
 from tortoise import timezone
 from tortoise.manager import Manager
+from tortoise.models import ModelMeta
 from tortoise.queryset import QuerySet
 
 # alias of Manager
@@ -26,14 +29,26 @@ class DeletedObjectManager(Manager):
         return super().get_queryset().exclude(deleted_at=0, deleted_by__isnull=True)
 
 
-class BaseModel(Model):
-    created_at = fields.DatetimeField(auto_now_add=True, description="created at")
-    created_by = fields.ForeignKeyField("models.Endpoint", description="created by")
-    modified_at = fields.DatetimeField(auto_now=True, description="modified at")
-    modified_by = fields.ForeignKeyField("models.Endpoint", description="modified by")
-    deleted_at = fields.BigIntField(default=0, description="deleted at(timestamp-ns)")
-    deleted_by = fields.ForeignKeyField("models.Endpoint", null=True, description="deleted by")
+class BaseModelMeta(ModelMeta):
+    def __new__(mcs, name: str, bases: Tuple, attrs: dict):
+        lower_name = name.lower()
+        attrs["created_at"] = fields.DatetimeField(auto_now_add=True, description="created at")
+        attrs["created_by"] = fields.ForeignKeyField(
+            "models.Endpoint", related_name=f"created_{lower_name}", description="created by"
+        )
+        attrs["modified_at"] = fields.DatetimeField(auto_now=True, description="modified at")
+        attrs["modified_by"] = fields.ForeignKeyField(
+            "models.Endpoint", related_name=f"modified_{lower_name}", description="modified by"
+        )
+        attrs["deleted_at"] = fields.BigIntField(default=0, description="deleted at(timestamp-ns)")
+        attrs["deleted_by"] = fields.ForeignKeyField(
+            "models.Endpoint", null=True, related_name=f"deleted_{lower_name}", description="deleted by"
+        )
+        newcls = super().__new__(mcs, name, bases, attrs)
+        return newcls
 
+
+class BaseModel(Model, metaclass=BaseModelMeta):
     # purpose for filtering deleted objects
     deleted_objects = DeletedObjectManager()
 
