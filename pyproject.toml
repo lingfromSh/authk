@@ -1,0 +1,38 @@
+[tool.poetry]
+name = "authk"
+version = "0.1.0"
+description = ""
+authors = ["Shiyun Ling <shiyun.ling@flexiv.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+fastapi = "^0.103.1"
+authlib = "^1.2.1"
+tortoise-orm = "^0.20.0"
+
+
+[tool.poetry.group.production.dependencies]
+uvicorn = "^0.23.2"
+
+
+[tool.poetry.group.dev.dependencies]
+isort = "^5.12.0"
+flake8 = "^6.1.0"
+pre-commit = "^3.4.0"
+
+[tool.autoflake]
+remove_all_unused_imports = true
+remove_duplicate_keys = true
+
+[tool.isort]
+profile = "black"
+
+[tool.black]
+line_length = 120
+taraget_version = ["py39", "py310", "py311"]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
